@@ -5,15 +5,15 @@ const Schema = mongoose.Schema;
 const Joi = require('joi')
 
 const adminSchema = new Schema({
-  title: {
+  email: {
     type: String,
-    required: true
+    required: true,
+    unique: true
   },
-  title: {
+  password: {
     type: String,
     required: true
   }
-
 })
 
 const Admin = mongoose.model('Admin', adminSchema);

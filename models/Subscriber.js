@@ -5,15 +5,15 @@ const Schema = mongoose.Schema;
 const Joi = require('joi')
 
 const subscriberSchema = new Schema({
-  title: {
+  email: {
     type: String,
-    required: true
+    required: true,
+    unique: true
   },
-  title: {
+  name: {
     type: String,
     required: true
   }
-
 })
 
 const Subscriber = mongoose.model('Subscriber', subscriberSchema);
