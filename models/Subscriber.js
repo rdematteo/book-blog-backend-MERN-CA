@@ -18,4 +18,4 @@ const subscriberSchema = new Schema({
 
 const Subscriber = mongoose.model('Subscriber', subscriberSchema);
 
-module.export = Subscriber
+module.exports = Subscriber
