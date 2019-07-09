@@ -6,14 +6,9 @@ const Joi = require('joi')
 
 const newsletterSchema = new Schema({
   title: {
-    type: String,
-    required: true
-  },
-  title: {
-    type: String,
+    type: { type: Schema.Types.ObjectId, ref: 'Subscriber'},
     required: true
   }
-
 })
 
 const Newsletter = mongoose.model('Newsletter', newsletterSchema);

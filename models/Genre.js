@@ -5,15 +5,10 @@ const Schema = mongoose.Schema;
 const Joi = require('joi')
 
 const genreSchema = new Schema({
-  title: {
-    type: String,
-    required: true
-  },
-  title: {
+  name: {
     type: String,
     required: true
   }
-
 })
 
 const Genre = mongoose.model('Genre', genreSchema);
