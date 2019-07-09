@@ -4,13 +4,12 @@ const Schema = mongoose.Schema;
 const Joi = require('joi')
 
 const bookSchema = new Schema({
-  title: {
+  Title: {
     type: String,
     required: true
   },
   Author: {
     type: { type: Schema.Types.ObjectId, ref: 'Author'},
-    required: true
   },
   Review: {
     type: String,
@@ -18,9 +17,8 @@ const bookSchema = new Schema({
   },
   Publisher: {
     type: { type: Schema.Types.ObjectId, ref: 'Publisher'},
-    required: true
   },
-  YearPublisher: {
+  YearPublished: {
     type: String,
     required: true
   },
@@ -50,4 +48,4 @@ const bookSchema = new Schema({
 
 const Book = mongoose.model('Book', bookSchema);
 
-module.export = Book
+module.exports = Book

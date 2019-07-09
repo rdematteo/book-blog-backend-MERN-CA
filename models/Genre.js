@@ -7,10 +7,9 @@ const Joi = require('joi')
 const genreSchema = new Schema({
   name: {
     type: String,
-    required: true
   }
 })
 
 const Genre = mongoose.model('Genre', genreSchema);
 
-module.export = Genre
+module.exports = Genre

@@ -7,10 +7,9 @@ const Joi = require('joi')
 const authorSchema = new Schema({
   name: {
     type: String,
-    required: true
   }
 })
 
 const Author = mongoose.model('Author', authorSchema);
 
-module.export = Author
+module.exports = Author
