@@ -1,7 +1,7 @@
 //This will search for the module express in the node-modules and import it in for use in this appliction
 const express = require('express');
 const Book = require('./models/Book');
-console.log(Book)
+
 //Create an app which an instance of express
 const app = new express();
 const port = 5500;
@@ -23,8 +23,87 @@ app.get('/', (req,res)=> {
 res.send('hello world')
 })
 
+app.get('/book/title/:name', async (req, res) => {
+     //console.log("hello")
+    const { name } = req.params;
+  console.log(req.params)
+  //console.log(name)
+  try {
+    const myString = name
+    const findBook = await Book.find({ Title: name})
+    console.log(findBook)
+    res.send(findBook);
+  }
+  catch(err) { 
+    console.log('error')
+      res.json(err);
+       }
+  })
+
+  //Update book
+
+  app.put('/book/title/:name', async (req, res) => {
+    //console.log("hello")
+   const { name } = req.params;
+   const { newTitle } = req.body
+  //  console.log(name)
+  //  console.log(newTitle)
+   
+ //console.log(req.params)
+ 
+ try {
+  //const myString = name
+  const findBook = await Book.findOne({ Title: name})
+  console.log('inside try')
+  console.log(findBook)
+  //findBook.Title = newTitle
+  findBook.Title = newTitle
+  console.log('findBook.Title')
+  console.log(findBook.Title)
+  console.log('findBook')
+  console.log(findBook)
+  findBook.save()
+  //console.log(updatedBook)
+
+
+
+//console.log(updatedBook)
+  // const saveBook = await findBook[0].Title.save()
+  // console.log(saveBook)
+  // res.send(saveBook);
+}
+catch(err) { 
+  console.log('error')
+    res.json(err);
+     }
+//  try {
+//    //const myString = name
+//    const newTitle = await Book.findOneAndUpdate({ Title: name}, {$set: {Title: newTitle}})
+//    console.log(newTitle)
+//    res.send(newTitle);
+//  }
+//  catch(err) { 
+//    console.log('error')
+//      res.json(err);
+//       }
+ })
+  
+// app.get('book/:id', (req, res) => {
+//   console.log("hello")
+//   const { id } = req.params;
+// console.log(req.params)
+
+//   Book.find({ id: id })
+//     .then(book => {
+//       return res.send(book);
+//     })
+//     .catch(err => {
+//     return res.json(err);
+//      })
+// })
+
 app.post('/seed', async (req, res)=> {
-  console.log(req.body.books[0].Title)
+  //console.log(req.body.books[0].Title)
   const { books } = req.body
   console.log(books)
   try {
