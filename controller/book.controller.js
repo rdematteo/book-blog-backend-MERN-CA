@@ -71,31 +71,33 @@ const deleteBook = async (req,res) => {
   }
 }
 
+//app.post(‘/seed’, )
+
 //Create Book
 const createBook = async (req, res)=> {
-  const { books } = req.body
-  console.log(books)
+  // console.log(req.body)
+  const { Title, Author, Review, Publisher, YearPublished, Genre, ISBN, LinkToBuy, TopPick, SeoKeyword } = req.body
   try {
-    const newBook = new Book ({
-      Title: books[0].Title,
-      Author: books[0].Author,
-      Review: books[0].Review,
-      Publisher: books[0].Publisher,
-      YearPublished: books[0].YearPublished,
-      Genre: [books[0].Genre],
-      ISBN: books[0].ISBN,
-      LinkToBuy:books[0].LinkToBuy,
-      TopPick: books[0].TopPick,
-      SeoKeyword: books[0].SeoKeyword,   
+    const newReview = new Book ({
+      Title: Title,
+      Author: Author,
+      Review: Review,
+      Publisher: Publisher,
+      YearPublished: YearPublished,
+      Genre: [Genre],
+      ISBN: ISBN,
+      LinkToBuy: LinkToBuy,
+      TopPick: TopPick,
+      SeoKeyword: SeoKeyword,
     })
-    const savedBook = await newBook.save()
-    //console.log(savedBook)
-    res.send(`saved ${savedBook.Title} book in database`)
+    // res.send(newReview);
+    const savedReview = await newReview.save()
+    console.log(savedReview)
+    res.send({savedReview: savedReview})
   } catch(err) {
-    res.status().status(400).send(`${err} problem`)
-    //console.log(`${err} problem`)
+    console.log(`${err} problem`)
   }
-}
+  }
 
 module.exports = {showBookByTitle, showOneBook, updateBook, deleteBook, createBook}
 
