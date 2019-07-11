@@ -1,7 +1,7 @@
 //This will search for the module express in the node-modules and import it in for use in this appliction
 const express = require('express');
 const Book = require('./models/Book');
-console.log(Book)
+
 //Create an app which an instance of express
 const app = new express();
 const port = 5500;
@@ -23,8 +23,44 @@ app.get('/', (req,res)=> {
 res.send('hello world')
 })
 
+app.get('/book/title/:name', async (req, res) => {
+     //console.log("hello")
+    const { name } = req.params;
+  console.log(req.params)
+  //console.log(name)
+  try {
+    const myString = name
+    const findBook = await Book.find({ Title: name})
+    console.log(findBook)
+    res.send(findBook);
+  }
+  catch(err) { 
+    console.log('error')
+      res.json(err);
+       }
+  })
+
+  //Update book
+
+  app.put('/book/title/:name', async (req, res) => {
+   const { name } = req.params;
+   const { newTitle } = req.body
+
+    
+ try {
+  const findBook = await Book.findOne({ Title: name})
+  findBook.Title = newTitle
+  await findBook.save()
+  res.send(findBook)
+
+}
+catch(err) { 
+  console.log('error')
+    res.json(err);
+     }
+ })
+
 app.post('/seed', async (req, res)=> {
-  console.log(req.body.books[0].Title)
   const { books } = req.body
   console.log(books)
   try {
@@ -40,14 +76,41 @@ app.post('/seed', async (req, res)=> {
       TopPick: books[0].TopPick,
       SeoKeyword: books[0].SeoKeyword,   
     })
-  const saveBook = await newBook.save()
-  console.log(saveBook)
-  res.send('hello world')
+    const savedBook = await newBook.save()
+    //console.log(savedBook)
+    res.send(`saved ${savedBook.Title} book in database`)
   } catch(err) {
     console.log(`${err} problem`)
   }
-  })
+})
 
+app.delete("/book/title/:title", async (req,res) => {
+  //console.log(req.params)
+  const { title } = req.params
+
+  try {
+    const doc = await Book.findOneAndDelete({ Title: title})
+    console.log(doc);
+    res.send(`${doc.Title} deleted from database`)
+  } catch(err) {
+  //return res.send(`No Book ${title} found`)
+   return res.json(`No Book ${title} found `+err)
+  }
+});
+
+// app.delete("/book/title/:title", async (req,res) => {
+//   console.log(req.params)
+//   const { title } = req.params
+
+//   Book.findOneAndDelete({ Title: title})
+//     .then( doc => {
+//    res.send(`${doc.Title} deleted from database`)
+//     })
+//     .catch((err) => {
+//   //return res.send(`No Book ${title} found`)
+//    return res.json(`No Book ${title} found `+err)
+//     });
+// });
 
 app.listen(port, () => {
   console.log(`listening at http://localhost:${port}`)
