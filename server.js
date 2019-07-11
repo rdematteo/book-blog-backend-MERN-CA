@@ -43,67 +43,24 @@ app.get('/book/title/:name', async (req, res) => {
   //Update book
 
   app.put('/book/title/:name', async (req, res) => {
-    //console.log("hello")
    const { name } = req.params;
    const { newTitle } = req.body
-  //  console.log(name)
-  //  console.log(newTitle)
-   
- //console.log(req.params)
- 
+
+    
  try {
-  //const myString = name
   const findBook = await Book.findOne({ Title: name})
-  console.log('inside try')
-  console.log(findBook)
-  //findBook.Title = newTitle
   findBook.Title = newTitle
-  console.log('findBook.Title')
-  console.log(findBook.Title)
-  console.log('findBook')
-  console.log(findBook)
-  findBook.save()
-  //console.log(updatedBook)
+  await findBook.save()
+  res.send(findBook)
 
-
-
-//console.log(updatedBook)
-  // const saveBook = await findBook[0].Title.save()
-  // console.log(saveBook)
-  // res.send(saveBook);
 }
 catch(err) { 
   console.log('error')
     res.json(err);
      }
-//  try {
-//    //const myString = name
-//    const newTitle = await Book.findOneAndUpdate({ Title: name}, {$set: {Title: newTitle}})
-//    console.log(newTitle)
-//    res.send(newTitle);
-//  }
-//  catch(err) { 
-//    console.log('error')
-//      res.json(err);
-//       }
  })
-  
-// app.get('book/:id', (req, res) => {
-//   console.log("hello")
-//   const { id } = req.params;
-// console.log(req.params)
-
-//   Book.find({ id: id })
-//     .then(book => {
-//       return res.send(book);
-//     })
-//     .catch(err => {
-//     return res.json(err);
-//      })
-// })
 
 app.post('/seed', async (req, res)=> {
-  //console.log(req.body.books[0].Title)
   const { books } = req.body
   console.log(books)
   try {
@@ -119,14 +76,41 @@ app.post('/seed', async (req, res)=> {
       TopPick: books[0].TopPick,
       SeoKeyword: books[0].SeoKeyword,   
     })
-  const saveBook = await newBook.save()
-  console.log(saveBook)
-  res.send('hello world')
+    const savedBook = await newBook.save()
+    //console.log(savedBook)
+    res.send(`saved ${savedBook.Title} book in database`)
   } catch(err) {
     console.log(`${err} problem`)
   }
-  })
+})
 
+app.delete("/book/title/:title", async (req,res) => {
+  //console.log(req.params)
+  const { title } = req.params
+
+  try {
+    const doc = await Book.findOneAndDelete({ Title: title})
+    console.log(doc);
+    res.send(`${doc.Title} deleted from database`)
+  } catch(err) {
+  //return res.send(`No Book ${title} found`)
+   return res.json(`No Book ${title} found `+err)
+  }
+});
+
+// app.delete("/book/title/:title", async (req,res) => {
+//   console.log(req.params)
+//   const { title } = req.params
+
+//   Book.findOneAndDelete({ Title: title})
+//     .then( doc => {
+//    res.send(`${doc.Title} deleted from database`)
+//     })
+//     .catch((err) => {
+//   //return res.send(`No Book ${title} found`)
+//    return res.json(`No Book ${title} found `+err)
+//     });
+// });
 
 app.listen(port, () => {
   console.log(`listening at http://localhost:${port}`)
