@@ -56,7 +56,7 @@ app.get('/book/title/:name', async (req, res) => {
 }
 catch(err) { 
   console.log('error')
-    res.json(err);
+    res.status(400).json(err);
      }
  })
 
@@ -80,37 +80,26 @@ app.post('/seed', async (req, res)=> {
     //console.log(savedBook)
     res.send(`saved ${savedBook.Title} book in database`)
   } catch(err) {
-    console.log(`${err} problem`)
+    res.status().status(400).send(`${err} problem`)
+    //console.log(`${err} problem`)
   }
 })
 
 app.delete("/book/title/:title", async (req,res) => {
-  //console.log(req.params)
   const { title } = req.params
 
   try {
     const doc = await Book.findOneAndDelete({ Title: title})
+    if(!doc){
+      res.status(404).send(`No Book ${title} found`)
+    }
     console.log(doc);
     res.send(`${doc.Title} deleted from database`)
   } catch(err) {
   //return res.send(`No Book ${title} found`)
-   return res.json(`No Book ${title} found `+err)
+   return res.status(400).json(err)
   }
 });
-
-// app.delete("/book/title/:title", async (req,res) => {
-//   console.log(req.params)
-//   const { title } = req.params
-
-//   Book.findOneAndDelete({ Title: title})
-//     .then( doc => {
-//    res.send(`${doc.Title} deleted from database`)
-//     })
-//     .catch((err) => {
-//   //return res.send(`No Book ${title} found`)
-//    return res.json(`No Book ${title} found `+err)
-//     });
-// });
 
 app.listen(port, () => {
   console.log(`listening at http://localhost:${port}`)
