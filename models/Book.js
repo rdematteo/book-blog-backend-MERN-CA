@@ -8,16 +8,12 @@ const bookSchema = new Schema({
     type: String,
     required: true
   },
-  Author: {
-    type: { type: Schema.Types.ObjectId, ref: 'Author'},
-  },
+  Author: { type: Schema.Types.ObjectId, ref: 'Author'},
   Review: {
     type: String,
     required: true
   },
-  Publisher: {
-    type: { type: Schema.Types.ObjectId, ref: 'Publisher'},
-  },
+  Publisher: { type: Schema.Types.ObjectId, ref: 'Publisher'},
   YearPublished: {
     type: String,
     required: true
