@@ -1,6 +1,7 @@
 //This will search for the module express in the node-modules and import it in for use in this appliction
 const express = require('express');
 const Book = require('./models/Book');
+const bookRoutes = require('./routes/book.routes');
 
 //Create an app which an instance of express
 const app = new express();
@@ -18,6 +19,9 @@ mongoose.connect(mongoURI, { useNewUrlParser: true }, (err) => {
    if(err) return console.log( `database not connected with ${err}`)
    console.log("connected to mongodb")
  })
+
+ // Connection of express routes with root directory
+ app.use('/', bookRoutes)
 
 app.get('/', (req,res)=> {
 res.send('hello world')
@@ -85,7 +89,7 @@ app.post('/seed', async (req, res)=> {
   }
 })
 
-app.delete("/book/title/:title", async (req,res) => {
+app.delete('/book/title/:title', async (req,res) => {
   const { title } = req.params
 
   try {
