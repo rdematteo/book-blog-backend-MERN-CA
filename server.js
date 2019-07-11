@@ -7,7 +7,7 @@ const app = new express();
 const port = process.env.Port ||  5500;
 const mongoose = require('mongoose');
 require('dotenv').config();
-const mongoURIENV = process.env.MONGO_URI;
+// const mongoURIENV = process.env.MONGO_URI;
 app.use(express.json());
 
 // Define the development database
@@ -27,7 +27,7 @@ app.get('/hello', (req, res) => {
 
 
 app.get('/', (req,res)=> {
-res.send('hello world')
+res.send('hello worlds')
 })
 
 app.post('/seed', async (req, res)=> {
@@ -52,6 +52,7 @@ app.post('/seed', async (req, res)=> {
     res.send({savedReview: savedReview})
   } catch(err) {
     console.log(`${err} problem`)
+    res.send(`${err} problem`)
   }
   })
 
