@@ -11,12 +11,12 @@ const mongoURIENV = process.env.MONGO_URI;
 app.use(express.json());
 
 // Define the development database
-const mongoURI = 'mongodb://localhost/bookmarks'
+// const mongoURI = 'mongodb://localhost/bookmarks'
 
 // connecting to mongodb from your application
-mongoose.connect(mongoURI, { useNewUrlParser: true }, (err) => {
-   if(err) return console.log( `database not connected with ${err}`)
-   console.log("connected to mongodb")
+mongoose.connect(process.env.DB_URL, { useNewUrlParser: true }, (err) => {
+   if(err) return console.log( `database not connected with ${err} 😩`)
+   console.log("connected to mongodb ✅")
  })
 
 app.get('/hello', (req, res) => {
@@ -47,9 +47,9 @@ app.post('/seed', async (req, res)=> {
       TopPick: books[0].TopPick,
       SeoKeyword: books[0].SeoKeyword,   
     })
-  const saveBook = await newBook.save()
-  console.log(saveBook)
-  res.send('hello world')
+  const savedBook = await newBook.save()
+  console.log(savedBook)
+  res.send({savedBook: savedBook})
   } catch(err) {
     console.log(`${err} problem`)
   }
