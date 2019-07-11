@@ -1,14 +1,17 @@
 //This will search for the module express in the node-modules and import it in for use in this appliction
 const express = require('express');
 const Book = require('./models/Book');
+
+
 const bookRoutes = require('./routes/book.routes');
+
 
 //Create an app which an instance of express
 const app = new express();
-const port = 5500;
+const port = process.env.Port ||  5500;
 const mongoose = require('mongoose');
 require('dotenv').config();
-const mongoURIENV = process.env.MONGO_URI;
+// const mongoURIENV = process.env.MONGO_URI;
 app.use(express.json());
 const cors = require("cors");
 
@@ -16,14 +19,28 @@ app.use(cors());
 
 
 // Define the development database
-const mongoURI = 'mongodb://localhost/bookmarks'
+// const mongoURI = 'mongodb://localhost/bookmarks'
 
 // connecting to mongodb from your application
-mongoose.connect(mongoURI, { useNewUrlParser: true }, (err) => {
-   if(err) return console.log( `database not connected with ${err}`)
-   console.log("connected to mongodb")
+mongoose.connect(process.env.DB_URL, { useNewUrlParser: true }, (err) => {
+   if(err) return console.log( `database not connected with ${err} 😩`)
+   console.log("connected to mongodb ✅")
  })
 
+
+app.get('/hello', (req, res) => {
+  res.send({
+    hello: 'hello world'
+  })
+})
+
+
+app.get('/', (req,res)=> {
+res.send('hello worlds')
+})
+
+
+=======
  // Connection of express routes with root directory
  app.use('/', bookRoutes)
 

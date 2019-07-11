@@ -7,6 +7,7 @@ const Joi = require('joi')
 const authorSchema = new Schema({
   name: {
     type: String,
+    required: true
   }
 })
 
