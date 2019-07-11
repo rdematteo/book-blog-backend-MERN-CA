@@ -3,45 +3,45 @@ const Schema = mongoose.Schema;
 //Note that Joi starts with 'J' as it refers to a class.
 const Joi = require('joi')
 
-const bookSchema = new Schema({
-  Title: {
+const reviewSchema = new Schema({
+  title: {
     type: String,
     required: true
   },
-  Author: { type: Schema.Types.ObjectId, ref: 'Author'},
-  Review: {
+  author: { type: Schema.Types.ObjectId, ref: 'Author'},
+  review: {
     type: String,
     required: true
   },
-  Publisher: { type: Schema.Types.ObjectId, ref: 'Publisher'},
-  YearPublished: {
+  publisher: { type: Schema.Types.ObjectId, ref: 'Publisher'},
+  yearPublished: {
     type: String,
     required: true
   },
-  Genre: {
+  genre: {
     type: [{ type: Schema.Types.ObjectId, ref: 'Genre'}],
     required: true
   },
-  ISBN: {
+  isbn: {
     type: String,
     required: true,
     unique: true
   },
-  LinkToBuy: {
+  linkToBuy: {
     type: String,
     required: true
   },
-  TopPick: {
+  topPick: {
     type: Boolean,
     required: false
   },
-  SeoKeyword: {
+  seoKeyword: {
     type: [String],
     required: false
   }
 
 })
 
-const Book = mongoose.model('Book', bookSchema);
+const Review = mongoose.model('Review', reviewSchema, 'reviews');
 
-module.exports = Book
+module.exports = Review
