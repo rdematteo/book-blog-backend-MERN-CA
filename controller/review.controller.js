@@ -31,7 +31,7 @@ console.log(req.params)
 //console.log(name)
 try {
  const myString = name
- const findReview = await Review.find({ Title: name})
+ const findReview = await Review.find({ title: name})
  console.log(findReview)
  res.send(findReview);
 }
@@ -48,8 +48,7 @@ const showOneReview = async (req, res) => {
 console.log(req.params)
 //console.log(name)
 try {
- const myString = name
- const findReview = await Review.find({ Title: name})
+ const findReview = await Review.find({ title: name})
  console.log(findReview)
  res.send(findReview);
 }
@@ -63,14 +62,12 @@ catch(err) {
 const updateReview = async (req, res) => {
   const { name } = req.params;
   const { newTitle } = req.body
-
-   
+ 
 try {
- const findReview = await Review.findOne({ Title: name})
- findReview.Title = newTitle
+ const findReview = await Review.findOne({ title: name})
+ findReview.title = newTitle
  await findReview.save()
  res.send(findReview)
-
 }
 catch(err) { 
  console.log('error')
@@ -82,12 +79,12 @@ const deleteReview = async (req,res) => {
   const { title } = req.params
 
   try {
-    const doc = await Review.findOneAndDelete({ Title: title})
+    const doc = await Review.findOneAndDelete({ title: title})
     if(!doc){
       res.status(404).send(`No Review ${title} found`)
     }
     console.log(doc);
-    res.send(`${doc.Title} deleted from database`)
+    res.send(`${doc.title} deleted from database`)
   } catch(err) {
   //return res.send(`No Review ${title} found`)
    return res.status(400).json(err)
