@@ -4,22 +4,12 @@ const Review = require('../models/Review')
 //show all review
 const showAllReviews = async (req, res) => {
   console.log('in show all reviews')
-  const reviews = await Review.find()
+  try {
+    const reviews = await Review.find().populate('author').populate('genre').populate('publisher')
   res.send({reviews})
-  const allReviews = reviews[0]
-  // console.log(allReviews);
-
-  const review = await Review.findOne({ title: 'Soccer: The Real Football'}).populate('Genre')
-  console.log(review);
-  // .exec((err, review) => {
-  //   console.log(review)
-    
-
-  // })
-    
-
-
-
+  } catch (err){
+      res.send(err)
+    }
 }
 
 
@@ -102,6 +92,14 @@ const createReview = async (req, res)=> {
   const { title, author, review, publisher, yearPublished, genre, isbn, linkToBuy, topPick, seoKeyword } = req.body
 
 //need to write if statements here if Author, Publisher doesn't exist.
+// try{
+//   const newAuthor = await Author.create({name: author})
+//   const newPublisher = await Publisher.create({name: publisher})
+//   const newGenre = await Genre.create({name: genre})
+//   res.send(newAuthor, newPublisher, genre)
+// }catch(err){
+//   res.send(`there's been an error: ${err}`)
+// }
 
   try {
     const newReview = new Review ({
