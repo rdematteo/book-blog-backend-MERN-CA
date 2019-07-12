@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const controllerMethods = require('../controller/review.controller');
+const controllerMethods = require('../controller/review-controller');
 
 router.get('/review/title/:name', controllerMethods.showReviewByTitle)
 

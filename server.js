@@ -2,8 +2,8 @@
 const express = require('express');
 const Review = require('./models/Review');
 
-
-const reviewRoutes = require('./routes/review.routes');
+const reviewRoutes = require('./routes/review-routes');
+//const authRoutes = require('./routes/auth/index');
 
 
 //Create an app which an instance of express
@@ -54,7 +54,7 @@ res.send('hello worlds')
 
  // Connection of express routes with root directory
  app.use('/', reviewRoutes)
-
+ app.use(require('./routes/auth'))
 
 app.listen(port, () => {
   console.log(`listening at http://localhost:${port}`)
