@@ -2,8 +2,10 @@ const request = require('request');
 
 //email subscription
 const emailSubscription = (req, res) => {
-  console.log(req.body)
   const { firstName, lastName, email } = req.body;
+  // console.log(firstName)
+  // console.log(lastName)
+  // console.log(email)
   // Make sure fields are filled
   if (!firstName || !lastName || !email) {
     res.redirect(firstName);
@@ -30,7 +32,7 @@ const emailSubscription = (req, res) => {
     url: 'https://us6.api.mailchimp.com/3.0/lists/f32ed9429d',
     method: 'POST',
     headers: {
-      Authorization: 'auth c8c947be5ffc22189c9a6e13d164f40c-us6'
+      Authorization: `auth ${process.env.MAILCHIMP_KEY}`
     },
     body: postData
   };
@@ -40,8 +42,12 @@ const emailSubscription = (req, res) => {
       res.redirect('/fail.html');
     } else {
       if (response.statusCode === 200) {
+        //console.log("hello1")
+
         res.redirect('/success.html');
       } else {
+        //console.log("hello")
+
         res.redirect('/fail.html');
       }
     }
