@@ -27,7 +27,7 @@ const Publisher = require('./models/Publisher');
 const Genre = require('./models/Genre');
 
 // Static folder
-app.use(express.static(path.join(__dirname, '/public')));
+app.use(express.static(path.join(__dirname, 'public')));
 
 app.post('/testseed', async(req, res) => {
   const { author, publisher, genre } =  req.body
