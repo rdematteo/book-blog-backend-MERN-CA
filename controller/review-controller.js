@@ -6,7 +6,7 @@ const showAllReviews = async (req, res) => {
   console.log('in show all reviews')
   try {
     const reviews = await Review.find().populate('author').populate('genre').populate('publisher')
-  res.send({reviews})
+    res.send({reviews})
   } catch (err){
       res.send(err)
     }
