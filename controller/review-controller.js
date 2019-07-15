@@ -1,15 +1,47 @@
 const Review = require('../models/Review')
+const Author = require('../models/Author')
+const Publisher = require('../models/Publisher')
+const Genre = require('../models/Genre')
 const { findAuthor, findPublisher, findGenre } = require('../utils/create-review')
 
 //show all review
 const showAllReviews = async (req, res) => {
   console.log('in show all reviews')
-  try {
-    const reviews = await Review.find().populate('author').populate('genre').populate('publisher')
-  res.send({reviews})
-  } catch (err){
-      res.send(err)
-    }
+
+  //search by author
+  const findAuthor = await Author.findOne({name: 'Andre Pirlo'})
+  const author_id = findAuthor._id
+  const findReviewsByAuthor = await Review.find({author: author_id}).populate('author').populate('genre').populate('publisher')
+  // res.send(findReviewsByAuthor)
+
+  //search by isbn
+  const findIsbn = await Review.findOne({isbn: '12345'}).populate('author').populate('genre').populate('publisher')
+  // res.send(findIsbn)
+
+  //search by publisher
+  const findPublisher = await Publisher.findOne({name: 'Coder Academy'})
+  const publisher_id = findPublisher._id
+  // console.log(publisher_id);
+  const findReviewsByPublisher = await Review.find({publisher: publisher_id}).populate('author').populate('genre').populate('publisher')
+  // res.send(findReviewsByPublisher)
+
+  //search by genre
+  const findGenre = await Genre.findOne({name: 'Memoir'})
+  const genre_id = findGenre._id
+  console.log(genre_id);
+  const findReviewsByGenre = await Review.find({genre: genre_id}).populate('author').populate('genre').populate('publisher')
+  res.send(`Count=${findReviewsByGenre.length} ${findReviewsByGenre}`)
+
+
+
+
+
+  // try {
+  //   const reviews = await Review.find().populate('author').populate('genre').populate('publisher')
+  // res.send({reviews})
+  // } catch (err){
+  //     res.send(err)
+  //   }
 }
 
 //Show review by title
@@ -91,9 +123,11 @@ const createReview = async (req, res)=> {
   const foundAuthor = await findAuthor(author)
   const foundPublisher = await findPublisher(publisher)
   const foundGenre = await findGenre(genre) 
-  await console.log(foundAuthor);
-  await console.log(foundPublisher);
-  await console.log(foundGenre);
+  const handleGenrePromises = await Promise.all(foundGenre)
+  // console.log(handlePromises)
+  // await console.log(foundAuthor);
+  // await console.log(foundPublisher);
+  // await console.log(foundGenre);
 
     try {
       const newReview = new Review ({
@@ -102,7 +136,7 @@ const createReview = async (req, res)=> {
         review: review,
         publisher: foundPublisher,
         yearPublished: yearPublished,
-        genre: foundGenre,
+        genre: handleGenrePromises,
         isbn: isbn,
         linkToBuy: linkToBuy,
         topPick: topPick,

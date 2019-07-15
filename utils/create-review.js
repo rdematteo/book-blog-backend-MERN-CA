@@ -33,19 +33,16 @@ const findPublisher = async (publisher)=> {
 }
 
 const findGenre = async (genre) => {
-  const genreArray = await Promise.all(genre.map(async(item)=>{
-  const findGenre = await Genre.findOne({name: item})
-  // console.log(findGenre);
-    if (!findGenre){
-      const newGenre = Genre.create({name: item})
+  const genreArray = await genre.map(async(item)=>{
+    const findGenre = await Genre.findOne({name: item})
+    if (!findGenre) {
+      const newGenre = await Genre.create({name: item})
       const genreId = newGenre._id
-      console.log(`new genre _id = ${genreId}`)
       return genreId
-      } else {
-      console.log(`exisiting genre _id = ${findGenre._id}`)
+    } else {
       return findGenre._id
-      }
-    }))
+    }
+  })
   return await genreArray
 } 
 
