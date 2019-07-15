@@ -12,4 +12,7 @@ router.delete('/review/title/:title', controllerMethods.deleteReview)
 
 router.post('/seed', controllerMethods.createReview)
 
+router.post('/testseed', controllerMethods.seedData)
+
+
 module.exports = router
