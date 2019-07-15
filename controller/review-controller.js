@@ -1,5 +1,5 @@
 const Review = require('../models/Review')
-
+const { findAuthor, findPublisher, findGenre } = require('../utils/create-review')
 
 //show all review
 const showAllReviews = async (req, res) => {
@@ -11,7 +11,6 @@ const showAllReviews = async (req, res) => {
       res.send(err)
     }
 }
-
 
 //Show review by title
 const showReviewByTitle = async (req, res) => {
@@ -83,42 +82,44 @@ const deleteReview = async (req,res) => {
 
 //app.post(‘/seed’, )
 
+
 //Create Review
 const createReview = async (req, res)=> {
-  // console.log(req.body)
+  
   const { title, author, review, publisher, yearPublished, genre, isbn, linkToBuy, topPick, seoKeyword } = req.body
+  
+  const foundAuthor = await findAuthor(author)
+  const foundPublisher = await findPublisher(publisher)
+  const foundGenre = await findGenre(genre) 
+  await console.log(foundAuthor);
+  await console.log(foundPublisher);
+  await console.log(foundGenre);
 
-//need to write if statements here if Author, Publisher doesn't exist.
-// try{
-//   const newAuthor = await Author.create({name: author})
-//   const newPublisher = await Publisher.create({name: publisher})
-//   const newGenre = await Genre.create({name: genre})
-//   res.send(newAuthor, newPublisher, genre)
-// }catch(err){
-//   res.send(`there's been an error: ${err}`)
-// }
+    try {
+      const newReview = new Review ({
+        title: title,
+        author: foundAuthor,
+        review: review,
+        publisher: foundPublisher,
+        yearPublished: yearPublished,
+        genre: foundGenre,
+        isbn: isbn,
+        linkToBuy: linkToBuy,
+        topPick: topPick,
+        seoKeyword: seoKeyword,
+      })
+      // res.send(newReview);
+      const savedReview = await newReview.save()
+      console.log(savedReview)
+      res.send({savedReview: savedReview})
 
-  try {
-    const newReview = new Review ({
-      title: title,
-      author: author,
-      review: review,
-      publisher: publisher,
-      yearPublished: yearPublished,
-      genre: [genre],
-      isbn: isbn,
-      linkToBuy: linkToBuy,
-      topPick: topPick,
-      seoKeyword: seoKeyword,
-    })
-    // res.send(newReview);
-    const savedReview = await newReview.save()
-    console.log(savedReview)
-    res.send({savedReview: savedReview})
-  } catch(err) {
-    console.log(`${err} problem`)
+    
+    } catch(err){
+    return res.status(400).json(`in post catch err with error: ${err}`)
+
   }
-  }
+}
+  
 
 module.exports = {showReviewByTitle, showOneReview, updateReview, deleteReview, createReview, showAllReviews}
 
