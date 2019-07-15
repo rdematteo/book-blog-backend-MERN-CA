@@ -1,5 +1,5 @@
 const Admin = require('../../models/auth/Admin')
-const { checkPassword, generateUser, generateAccessToken } = require('../../utils/auth-utils')
+const { checkPassword, generateUser, generateAccessToken, generateNewHash, generateNewAccessToken } = require('../../utils/auth-utils')
 
 // register post endpoint
 const register = async (req, res) => {
@@ -50,7 +50,64 @@ const login = async (req, res) => {
   }
 }
 
+const reset = async (req, res) => {
+  const { email, password, newPassword } = req.body
+  try {
+    const query = await Admin.findOne({ email: email })
+    if (query !== null) {
+      const result = await checkPassword(password, query.password)
+      if (!result) {
+        return res.status(403).send('incorrect credentials pass')
+      } else {
+        const newHash = await generateNewHash(newPassword)
+        query.password = newHash
+        await query.save()
+        const token = await generateAccessToken(query)
+        return res.send({ token })
+      }
+    } else {
+      return res.status(403).send('incorrect credentials ')
+    }
+
+  } catch(err) {
+    return res.status(403).send('incorret credentials outside')
+  }
+}
+
+const forgot = async (req, res) => {
+  const token = await generateNewAccessToken(email)
+  res.json( {token1: token})
+}
+
+const forgotPass = async (req, res) => {
+  const { email, newPassword } = req.body
+  console.log(newPassword);
+  try {
+    const query = await Admin.findOne({ email: email})
+      if(query !== null){
+        const newHash = await generateNewHash(newPassword)
+        query.password = newHash
+        await query.save()
+        const token = await generateAccessToken(query)
+        return res.send({ token })
+      } else {
+        return res.status(403).send('email not found')
+      }
+
+  } catch(err) {
+    return res.status(403).send('an error occured')
+  }
+
+
+
+
+}
+
+
 module.exports = {
   register,
-  login
+  login,
+  reset,
+  forgot,
+  forgotPass
 }
