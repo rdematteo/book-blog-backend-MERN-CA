@@ -6,7 +6,7 @@ const Genre = require("../models/Genre");
 
 //show all review
 const showAllReviews = async (req, res) => {
-  console.log("in show all reviews");
+  // console.log("in show all reviews");
 
   //search by author
   const findAuthor = await Author.findOne({ name: "Andre Pirlo" });
@@ -37,19 +37,19 @@ const showAllReviews = async (req, res) => {
   //search by genre
   const findGenre = await Genre.findOne({ name: "Memoir" });
   const genre_id = findGenre._id;
-  console.log(genre_id);
+  // console.log(genre_id);
   const findReviewsByGenre = await Review.find({ genre: genre_id })
     .populate("author")
     .populate("genre")
     .populate("publisher");
-  res.send(findReviewsByGenre);
+  // res.send(findReviewsByGenre);
 
-  // try {
-  //   const reviews = await Review.find().populate('author').populate('genre').populate('publisher')
-  // res.send({reviews})
-  // } catch (err){
-  //     res.send(err)
-  //   }
+  try {
+    const reviews = await Review.find().populate('author').populate('genre').populate('publisher')
+  res.send({reviews})
+  } catch (err){
+      res.send(err)
+    }
 };
 
 //Show review by title
@@ -91,10 +91,12 @@ const updateReview = async (req, res) => {
 };
 
 const deleteReview = async (req, res) => {
-  const { title } = req.params;
-
+  console.log(req.body)
+  const { title } = req.body
+  console.log(title);
   try {
     const doc = await Review.findOneAndDelete({ title: title });
+
     if (!doc) {
       res.status(404).send(`No Review ${title} found`);
     }
@@ -107,6 +109,8 @@ const deleteReview = async (req, res) => {
 
 //Create Review
 const createReview = async (req, res) => {
+  const data = req.body
+  
   const {
     title,
     author,
@@ -138,6 +142,7 @@ const createReview = async (req, res) => {
       topPick: topPick,
       seoKeyword: seoKeyword
     });
+    console.log(newReview);
     const savedReview = await newReview.save();
     res.send({ savedReview: savedReview });
   } catch (err) {

@@ -8,7 +8,7 @@ router.get('/reviews', controllerMethods.showAllReviews)
 
 router.put('/review/title/:name', controllerMethods.updateReview)
 
-router.delete('/review/title/:title', controllerMethods.deleteReview)
+router.delete('/deleteReview', controllerMethods.deleteReview)
 
 router.post('/seed', controllerMethods.createReview)
 
