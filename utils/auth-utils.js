@@ -8,6 +8,11 @@ const generateHash = async (password) => {
   return await bcrypt.hash(password, saltRounds)
 }
 
+const generateNewHash = async (newPassword) => {
+  const saltRounds = 10;
+  return await bcrypt.hash(newPassword, saltRounds)
+}
+
 const checkPassword = async (password, hash) => {
   return await bcrypt.compare(password, hash)
 }
@@ -22,11 +27,19 @@ const generateUser = async (email, password) => {
 }
 
 const generateAccessToken = async ({ user }) => {
-  return jwt.sign({ user }, process.env.JWT_SECRET, {expiresIn: '1d'});
+  return jwt.sign({ user }, process.env.JWT_SECRET, {expiresIn: '7d'});
 } 
+
+const generateNewAccessToken = async ({ user }) => {
+  return jwt.sign({ user }, process.env.JWT_SECRET, {expiresIn: '600000'});
+} 
+
+
 
 module.exports = {
   checkPassword,
   generateUser,
-  generateAccessToken
+  generateAccessToken,
+  generateNewHash,
+  generateNewAccessToken
 }
