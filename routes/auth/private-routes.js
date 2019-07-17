@@ -7,6 +7,7 @@ const { secrets } = require('../../controller/auth/private-controller');
 
 const checkToken = (req, res, next) => {
   const { token } = req.headers;
+  console.log("@@@@@@@@@@@@@@@@@   "+token);
   jwt.verify(token, process.env.JWT_SECRET, (err, decoded) => {
     if (err) {
       return res.status(403).send('incorrect token');

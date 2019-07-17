@@ -1,9 +1,9 @@
 const Admin = require('../../models/auth/Admin');
-
+const path = require('path');
 const { checkPassword, generateUser, generateAccessToken, generateNewHash, generateNewAccessToken } = require('../../utils/auth-utils')
 
-const email = process.env.MAILER_EMAIL_ID || 'testgarry8@gmail.com';
-const pass = process.env.MAILER_PASSWORD || 'pathak123!';
+const email = process.env.MAILER_EMAIL_ID;
+const pass = process.env.MAILER_PASSWORD;
 const  nodemailer = require('nodemailer');
 
 
@@ -41,6 +41,7 @@ const register = async (req, res) => {
 const login = async (req, res) => {
   //res.send(req.body)
   const { email, password } = req.body
+  console.log(email+"     "+password)
   if (email && password) {
     try {
       const query = await Admin.findOne({ email: email })
@@ -91,22 +92,22 @@ const forgot = async (req, res) => {
   console.log(req.body)
   const token = await generateNewAccessToken(req.body.email)
   //We will send the email from here
-  sendForgotPasswordEmail(token);
+  sendForgotPasswordEmail(token, req.body.email);
   res.json( {token1: token})
 }
 
-const sendForgotPasswordEmail = (token) => {
-  var data = {
+const sendForgotPasswordEmail = (token,memEmail) => {
+  const data = {
     text: 'Plaintext version of the message',
     html:   `<div><h3>Hi,</h3>\
             <p>You requested for a password reset, kindly use this \
-            <a href="http://localhost:5500/auth/forgotpass?token=${token}">link</a> to reset your password</p>
+            <a href="http://localhost:5500/auth/resetpass?token=${token}&email=${memEmail}">link</a> to reset your password</p>
             <br>
             <p>Cheers!</p>
             </div>`,
-        to: "gauravpathak_84@yahoo.com",
+        to: memEmail,
         from: email,
-        subject: 'Password help has arrived!',
+        subject: 'Password reset!',
       };
 
       smtpTransport.sendMail(data, function(err) {
@@ -123,11 +124,14 @@ const forgotPass = async (req, res) => {
   console.log(newPassword);
   try {
     const query = await Admin.findOne({ email: email})
+    console.log(query);
       if(query !== null){
-        const newHash = await generateNewHash(newPassword)
+        const newHash = await generateNewHash(newPassword);
+
         query.password = newHash
         await query.save()
         const token = await generateAccessToken(query)
+        console.log(token);
         return res.send({ token })
       } else {
         return res.status(403).send('email not found')
@@ -137,9 +141,11 @@ const forgotPass = async (req, res) => {
     return res.status(403).send('an error occured')
   }
 
-
-
-
+}
+const resetpass = async (req,res) => {
+  const {token,email} = req.params;
+  console.log(__dirname);
+  res.sendFile(path.join(__dirname, `../../public/testRest.html`));
 }
 
 
@@ -148,5 +154,6 @@ module.exports = {
   login,
   reset,
   forgot,
-  forgotPass
+  forgotPass,
+  resetpass
 }
