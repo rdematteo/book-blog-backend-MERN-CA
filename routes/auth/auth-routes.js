@@ -6,7 +6,6 @@ const { register, login, reset, forgot, forgotPass } = require('../../controller
 
 router.post('/register', register)
 router.post('/login', login)
-
 router.post('/reset', reset )
 router.post('/forgot', forgot)
 router.post('/forgotpass', forgotPass)

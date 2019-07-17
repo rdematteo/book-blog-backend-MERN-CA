@@ -1,6 +1,19 @@
-const Admin = require('../../models/auth/Admin')
+const Admin = require('../../models/auth/Admin');
+
 const { checkPassword, generateUser, generateAccessToken, generateNewHash, generateNewAccessToken } = require('../../utils/auth-utils')
 
+const email = process.env.MAILER_EMAIL_ID || 'testgarry8@gmail.com';
+const pass = process.env.MAILER_PASSWORD || 'pathak123!';
+const  nodemailer = require('nodemailer');
+
+
+const smtpTransport = nodemailer.createTransport({
+  service: process.env.MAILER_SERVICE_PROVIDER || 'Gmail',
+  auth: {
+    user: email,
+    pass: pass
+  }
+});
 // register post endpoint
 const register = async (req, res) => {
   const { email, password } = req.body
@@ -75,10 +88,36 @@ const reset = async (req, res) => {
 }
 
 const forgot = async (req, res) => {
-  const token = await generateNewAccessToken(email)
+  console.log(req.body)
+  const token = await generateNewAccessToken(req.body.email)
+  //We will send the email from here
+  sendForgotPasswordEmail(token);
   res.json( {token1: token})
 }
 
+const sendForgotPasswordEmail = (token) => {
+  var data = {
+    text: 'Plaintext version of the message',
+    html:   `<div><h3>Hi,</h3>\
+            <p>You requested for a password reset, kindly use this \
+            <a href="http://localhost:5500/auth/forgotpass?token=${token}">link</a> to reset your password</p>
+            <br>
+            <p>Cheers!</p>
+            </div>`,
+        to: "gauravpathak_84@yahoo.com",
+        from: email,
+        subject: 'Password help has arrived!',
+      };
+
+      smtpTransport.sendMail(data, function(err) {
+        if (!err) {
+          return res.json({ message: 'Kindly check your email for further instructions' });
+        } else {
+          return done(err);
+        }
+      });
+
+}
 const forgotPass = async (req, res) => {
   const { email, newPassword } = req.body
   console.log(newPassword);
