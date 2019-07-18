@@ -2,7 +2,13 @@ const Review = require("../models/Review");
 const Author = require("../models/Author");
 const Publisher = require("../models/Publisher");
 const Genre = require("../models/Genre");
+const multer = require('multer');
+const AWS = require('aws-sdk');
+require('dotenv').config()
 
+// multer handles image buffer object, adds req.file to endpoint
+const storage = multer.memoryStorage()
+const upload = multer({ storage: storage }).single('file');
 
 //show all review
 const showAllReviews = async (req, res) => {
@@ -140,43 +146,81 @@ const deleteReview = async (req, res) => {
 };
 
 //Create Review
+
+const s3credentials = new AWS.S3({
+  accessKeyId: process.env.ACCESSKEYID,
+  secretAccessKey: process.env.SECRETACCESSKEY
+});
+
+
+
+
 const createReview = async (req, res) => {
-  const data = req.body
-  
-  const {
-    title,
-    author,
-    review,
-    publisher,
-    yearPublished,
-    genre,
-    isbn,
-    linkToBuy,
-    topPick,
-    seoKeyword
-  } = req.body;
+  console.log("in create Review");
 
-  const foundAuthor = await findAuthor(author);
-  const foundPublisher = await findPublisher(publisher);
-  const foundGenre = await findGenre(genre);
-  const handleGenrePromises = await Promise.all(foundGenre);
 
+  let fileParams = {
+    Bucket: 'bookmarks-rag',
+    Body: req.file.buffer,
+    Key: 'bookmarks' + req.file.originalname,
+    ACL: 'public-read',
+    ContentType: req.file.mimetype
+  }
+   
   try {
-    const newReview = new Review({
-      title: title,
-      author: foundAuthor,
-      review: review,
-      publisher: foundPublisher,
-      yearPublished: yearPublished,
-      genre: handleGenrePromises,
-      isbn: isbn,
-      linkToBuy: linkToBuy,
-      topPick: topPick,
-      seoKeyword: seoKeyword
-    });
-    console.log(newReview);
-    const savedReview = await newReview.save();
-    res.send({ savedReview: savedReview });
+   s3credentials.upload(fileParams, async (err, datam) => {
+    if (err) {
+      // handle the error
+      // res.send('you got an error')
+    } else {
+      // here you have access to the AWS url through data.Location
+      // you could store this string in your database
+      console.log(datam.Location)
+      const imageUrl = datam.Location
+      // res.send('all good')
+      console.log(imageUrl);
+
+      const reviewData = JSON.parse(req.body.data)
+      console.log(reviewData);
+
+      const {
+          title,
+          author,
+          review,
+          publisher,
+          yearPublished,
+          genre,
+          isbn,
+          linkToBuy,
+          topPick,
+          seoKeyword
+        } = reviewData;
+
+        const foundAuthor = await findAuthor(author);
+        const foundPublisher = await findPublisher(publisher);
+        const foundGenre = await findGenre(genre);
+        const handleGenrePromises = await Promise.all(foundGenre);
+
+        const newReview = await new Review({
+            title: title,
+            author: foundAuthor,
+            review: review,
+            publisher: foundPublisher,
+            yearPublished: yearPublished,
+            genre: handleGenrePromises,
+            isbn: isbn,
+            linkToBuy: linkToBuy,
+            topPick: topPick,
+            seoKeyword: seoKeyword,
+            url: imageUrl
+          });
+          console.log(newReview);
+
+          const savedReview = await newReview.save();
+          console.log(savedReview);
+          res.send(savedReview);
+    }})
+   
   } catch (err) {
     return res.status(400).json(`in post catch err with error: ${err}`);
   }

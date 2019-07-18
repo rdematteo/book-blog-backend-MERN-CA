@@ -19,6 +19,7 @@
   },
   "homepage": "https://github.com/rdematteo/book-blog-backend-MERN-CA#readme",
   "dependencies": {
+    "aws-sdk": "^2.494.0",
     "bcrypt": "^3.0.6",
     "cors": "^2.8.5",
     "dotenv": "^8.0.0",
@@ -26,6 +27,7 @@
     "joi": "^14.3.1",
     "jsonwebtoken": "^8.5.1",
     "mongoose": "^5.6.4",
+    "multer": "^1.4.2",
     "nodemailer": "^6.3.0",
     "nodemon": "^1.19.1",
     "request": "^2.88.0"
