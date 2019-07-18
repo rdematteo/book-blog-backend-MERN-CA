@@ -15,6 +15,7 @@ const checkToken = (req, res, next) => {
       // you have access to decoded here
       next()
     }
+    console.log("hello")
   })
 }
 

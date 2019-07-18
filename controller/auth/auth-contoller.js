@@ -89,11 +89,10 @@ const reset = async (req, res) => {
 }
 
 const forgot = async (req, res) => {
-  console.log(req.body)
   const token = await generateNewAccessToken(req.body.email)
   //We will send the email from here
   sendForgotPasswordEmail(token, req.body.email);
-  res.json( {token1: token})
+  res.json( {token: token})
 }
 
 const sendForgotPasswordEmail = (token,memEmail) => {
@@ -101,7 +100,7 @@ const sendForgotPasswordEmail = (token,memEmail) => {
     text: 'Plaintext version of the message',
     html:   `<div><h3>Hi,</h3>\
             <p>You requested for a password reset, kindly use this \
-            <a href="http://localhost:5500/auth/resetpass?token=${token}&email=${memEmail}">link</a> to reset your password</p>
+            <a href="http://localhost:3000/ResetPassword?token=${token}&email=${memEmail}">link</a> to reset your password</p>
             <br>
             <p>Cheers!</p>
             </div>`,
@@ -114,7 +113,7 @@ const sendForgotPasswordEmail = (token,memEmail) => {
         if (!err) {
           return res.json({ message: 'Kindly check your email for further instructions' });
         } else {
-          return done(err);
+          return res.send("Problem sending email");
         }
       });
 
