@@ -78,12 +78,9 @@ const showOneReview = async (req, res) => {
 // Update review
 const updateReview = async (req, res) => {
   console.log("in update Review");
-  // console.log(req.body);
   const { id } = req.body
   const { newReview } = req.body
-  console.log(id);
-  // console.log(newReview);
-
+  
   const {
     title,
     author,
@@ -116,8 +113,11 @@ const updateReview = async (req, res) => {
   }
 
   try {
-    const savedReview = await Review.updateOne({"_id": id}, updatedReview)
-    res.send({ updatedReview: updatedReview });
+    await Review.updateOne({"_id": id}, updatedReview)
+
+    const reviews = await Review.find().populate('author').populate('genre').populate('publisher')
+  res.send({reviews})
+
   } catch (err) {
     return res.status(400).json(`in post catch err with error: ${err}`);
   }
@@ -125,9 +125,7 @@ const updateReview = async (req, res) => {
 };
 
 const deleteReview = async (req, res) => {
-  console.log(req.body)
   const { title } = req.body
-  console.log(title);
   try {
     const doc = await Review.findOneAndDelete({ title: title });
 
