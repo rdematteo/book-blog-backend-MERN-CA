@@ -6,7 +6,7 @@ router.get('/review/title/:name', controllerMethods.showReviewByTitle)
 
 router.get('/reviews', controllerMethods.showAllReviews)
 
-router.put('/review/title/:name', controllerMethods.updateReview)
+router.put('/updateReview', controllerMethods.updateReview)
 
 router.delete('/deleteReview', controllerMethods.deleteReview)
 

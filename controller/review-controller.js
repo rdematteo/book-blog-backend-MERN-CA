@@ -8,41 +8,41 @@ const Genre = require("../models/Genre");
 const showAllReviews = async (req, res) => {
   // console.log("in show all reviews");
 
-  //search by author
-  const findAuthor = await Author.findOne({ name: "Andre Pirlo" });
-  const author_id = findAuthor._id;
-  const findReviewsByAuthor = await Review.find({ author: author_id })
-    .populate("author")
-    .populate("genre")
-    .populate("publisher");
-  // res.send(findReviewsByAuthor)
+  // //search by author
+  // const findAuthor = await Author.findOne({ name: "Andre Pirlo" });
+  // const author_id = findAuthor._id;
+  // const findReviewsByAuthor = await Review.find({ author: author_id })
+  //   .populate("author")
+  //   .populate("genre")
+  //   .populate("publisher");
+  // // res.send(findReviewsByAuthor)
 
-  //search by isbn
-  const findIsbn = await Review.findOne({ isbn: "12345" })
-    .populate("author")
-    .populate("genre")
-    .populate("publisher");
-  // res.send(findIsbn)
+  // //search by isbn
+  // const findIsbn = await Review.findOne({ isbn: "12345" })
+  //   .populate("author")
+  //   .populate("genre")
+  //   .populate("publisher");
+  // // res.send(findIsbn)
 
-  //search by publisher
-  const findPublisher = await Publisher.findOne({ name: "Coder Academy" });
-  const publisher_id = findPublisher._id;
-  // console.log(publisher_id);
-  const findReviewsByPublisher = await Review.find({ publisher: publisher_id })
-    .populate("author")
-    .populate("genre")
-    .populate("publisher");
-  // res.send(findReviewsByPublisher)
+  // //search by publisher
+  // const findPublisher = await Publisher.findOne({ name: "Coder Academy" });
+  // const publisher_id = findPublisher._id;
+  // // console.log(publisher_id);
+  // const findReviewsByPublisher = await Review.find({ publisher: publisher_id })
+  //   .populate("author")
+  //   .populate("genre")
+  //   .populate("publisher");
+  // // res.send(findReviewsByPublisher)
 
-  //search by genre
-  const findGenre = await Genre.findOne({ name: "Memoir" });
-  const genre_id = findGenre._id;
-  // console.log(genre_id);
-  const findReviewsByGenre = await Review.find({ genre: genre_id })
-    .populate("author")
-    .populate("genre")
-    .populate("publisher");
-  // res.send(findReviewsByGenre);
+  // //search by genre
+  // const findGenre = await Genre.findOne({ name: "Memoir" });
+  // const genre_id = findGenre._id;
+  // // console.log(genre_id);
+  // const findReviewsByGenre = await Review.find({ genre: genre_id })
+  //   .populate("author")
+  //   .populate("genre")
+  //   .populate("publisher");
+  // // res.send(findReviewsByGenre);
 
   try {
     const reviews = await Review.find().populate('author').populate('genre').populate('publisher')
@@ -77,17 +77,51 @@ const showOneReview = async (req, res) => {
 
 // Update review
 const updateReview = async (req, res) => {
-  const { name } = req.params;
-  const { newTitle } = req.body;
+  console.log("in update Review");
+  // console.log(req.body);
+  const { id } = req.body
+  const { newReview } = req.body
+  console.log(id);
+  // console.log(newReview);
+
+  const {
+    title,
+    author,
+    review,
+    publisher,
+    yearPublished,
+    genre,
+    isbn,
+    linkToBuy,
+    topPick,
+    seoKeyword
+  } = newReview;
+
+  const foundAuthor = await findAuthor(author);
+  const foundPublisher = await findPublisher(publisher);
+  const foundGenre = await findGenre(genre);
+  const handleGenrePromises = await Promise.all(foundGenre);
+  
+  const updatedReview = {
+    title: title,
+    author: foundAuthor,
+    review: review,
+    publisher: foundPublisher,
+    yearPublished: yearPublished,
+    genre: handleGenrePromises,
+    isbn: isbn,
+    linkToBuy: linkToBuy,
+    topPick: topPick,
+    seoKeyword: seoKeyword
+  }
 
   try {
-    const findReview = await Review.findOne({ title: name });
-    findReview.title = newTitle;
-    await findReview.save();
-    res.send(findReview);
+    const savedReview = await Review.updateOne({"_id": id}, updatedReview)
+    res.send({ updatedReview: updatedReview });
   } catch (err) {
-    res.status(400).json(err);
+    return res.status(400).json(`in post catch err with error: ${err}`);
   }
+
 };
 
 const deleteReview = async (req, res) => {
