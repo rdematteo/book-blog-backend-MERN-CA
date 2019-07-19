@@ -2,17 +2,20 @@ const Review = require("../models/Review");
 const Author = require("../models/Author");
 const Publisher = require("../models/Publisher");
 const Genre = require("../models/Genre");
-const multer = require("multer");
 const AWS = require("aws-sdk");
 require("dotenv").config();
 
-// multer handles image buffer object, adds req.file to endpoint
-const storage = multer.memoryStorage();
-const upload = multer({ storage: storage }).single("file");
+const s3credentials = new AWS.S3({
+  accessKeyId: process.env.ACCESSKEYID,
+  secretAccessKey: process.env.SECRETACCESSKEY
+});
 
 //show all review
 const showAllReviews = async (req, res) => {
   // console.log("in show all reviews");
+
+  /*the below code allows developors to hit backend if wanting to search for author/isbn/publisher/genre
+  the application search the data from state*/
 
   // //search by author
   // const findAuthor = await Author.findOne({ name: "Andre Pirlo" });
@@ -87,9 +90,8 @@ const showOneReview = async (req, res) => {
 // Update review
 const updateReview = async (req, res) => {
   console.log("in update Review");
-  // console.log(req.body);
-  // console.log(req.file);
 
+  //updates review without uploading new image
   if (!req.file) {
     console.log("no file/file buffer exists");
     const reviewData = JSON.parse(req.body.data);
@@ -132,24 +134,16 @@ const updateReview = async (req, res) => {
       url: url
     };
 
-    try {
-      const saved = await Review.updateOne({ _id: id }, updatedReview);
-      console.log(id);
-      console.log(saved);
-
-      const reviews = await Review.find()
-        .populate("author")
-        .populate("genre")
-        .populate("publisher");
-      res.send({ reviews });
-    } catch (err) {
-      return res
-        .status(400)
-        .json(`in post catch err with error: ${err.message}`);
-    }
+    await Review.updateOne({ _id: id }, updatedReview);
+    const reviews = await Review.find()
+      .populate("author")
+      .populate("genre")
+      .populate("publisher");
+    res.send({ reviews });
   } else {
     console.log("file buffer/image exists");
 
+    //updates review with new image
     let fileParams = {
       Bucket: "bookmarks-rag",
       Body: req.file.buffer,
@@ -161,22 +155,12 @@ const updateReview = async (req, res) => {
     try {
       s3credentials.upload(fileParams, async (err, datam) => {
         if (err) {
-          // handle the error
           res.send("you got an error");
         } else {
-          // here you have access to the AWS url through data.Location
-          // you could store this string in your database
-          // console.log(datam.Location)
           const imageUrl = datam.Location;
-          console.log(imageUrl);
-
           const reviewData = JSON.parse(req.body.data);
-          // console.log(reviewData);
-
           const { id } = reviewData;
           const { newReview } = reviewData;
-          console.log(newReview);
-          console.log(id);
 
           const {
             title,
@@ -210,23 +194,13 @@ const updateReview = async (req, res) => {
             seoKeyword: seoKeyword,
             url: imageUrl
           };
-          console.log(updatedReview);
 
-          try {
-            const saved = await Review.updateOne({ _id: id }, updatedReview);
-            console.log(id);
-            console.log(saved);
-
-            const reviews = await Review.find()
-              .populate("author")
-              .populate("genre")
-              .populate("publisher");
-            res.send({ reviews });
-          } catch (err) {
-            return res
-              .status(400)
-              .json(`in post catch err with error: ${err.message}`);
-          }
+          await Review.updateOne({ _id: id }, updatedReview);
+          const reviews = await Review.find()
+            .populate("author")
+            .populate("genre")
+            .populate("publisher");
+          res.send({ reviews });
         }
       });
     } catch (err) {
@@ -251,12 +225,6 @@ const deleteReview = async (req, res) => {
 };
 
 //Create Review
-
-const s3credentials = new AWS.S3({
-  accessKeyId: process.env.ACCESSKEYID,
-  secretAccessKey: process.env.SECRETACCESSKEY
-});
-
 const createReview = async (req, res) => {
   console.log("in create Review");
 
