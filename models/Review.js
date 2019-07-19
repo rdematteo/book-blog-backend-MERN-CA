@@ -38,6 +38,10 @@ const reviewSchema = new Schema({
   seoKeyword: {
     type: [String],
     required: false
+  },
+  url: {
+    type: String,
+    required: true
   }
 
 })
