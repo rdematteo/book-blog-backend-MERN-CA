@@ -10,7 +10,7 @@ router.put('/updateReview', controllerMethods.updateReview)
 
 router.delete('/deleteReview', controllerMethods.deleteReview)
 
-router.post('/seed', controllerMethods.createReview)
+router.post('/createReview', controllerMethods.createReview)
 
 router.post('/testseed', controllerMethods.seedData)
 
