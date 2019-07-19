@@ -11,9 +11,10 @@ const port = process.env.Port || 5500;
 const mongoose = require("mongoose");
 require("dotenv").config();
 
+app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-app.use(cors());
+
 // Static folder
 app.use(express.static(path.join(__dirname, "/public")));
 app.use("/", emailSubscriptionRoutes);
