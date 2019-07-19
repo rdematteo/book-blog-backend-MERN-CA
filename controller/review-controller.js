@@ -2,11 +2,20 @@ const Review = require("../models/Review");
 const Author = require("../models/Author");
 const Publisher = require("../models/Publisher");
 const Genre = require("../models/Genre");
+const AWS = require("aws-sdk");
+require("dotenv").config();
 
+const s3credentials = new AWS.S3({
+  accessKeyId: process.env.ACCESSKEYID,
+  secretAccessKey: process.env.SECRETACCESSKEY
+});
 
 //show all review
 const showAllReviews = async (req, res) => {
   // console.log("in show all reviews");
+
+  /*the below code allows developors to hit backend if wanting to search for author/isbn/publisher/genre
+  the application search the data from state*/
 
   // //search by author
   // const findAuthor = await Author.findOne({ name: "Andre Pirlo" });
@@ -45,11 +54,14 @@ const showAllReviews = async (req, res) => {
   // // res.send(findReviewsByGenre);
 
   try {
-    const reviews = await Review.find().populate('author').populate('genre').populate('publisher')
-  res.send({reviews})
-  } catch (err){
-      res.send(err)
-    }
+    const reviews = await Review.find()
+      .populate("author")
+      .populate("genre")
+      .populate("publisher");
+    res.send({ reviews });
+  } catch (err) {
+    res.send(err);
+  }
 };
 
 //Show review by title
@@ -78,91 +90,37 @@ const showOneReview = async (req, res) => {
 // Update review
 const updateReview = async (req, res) => {
   console.log("in update Review");
-  const { id } = req.body
-  const { newReview } = req.body
-  
-  const {
-    title,
-    author,
-    review,
-    publisher,
-    yearPublished,
-    genre,
-    isbn,
-    linkToBuy,
-    topPick,
-    seoKeyword
-  } = newReview;
 
-  const foundAuthor = await findAuthor(author);
-  const foundPublisher = await findPublisher(publisher);
-  const foundGenre = await findGenre(genre);
-  const handleGenrePromises = await Promise.all(foundGenre);
-  
-  const updatedReview = {
-    title: title,
-    author: foundAuthor,
-    review: review,
-    publisher: foundPublisher,
-    yearPublished: yearPublished,
-    genre: handleGenrePromises,
-    isbn: isbn,
-    linkToBuy: linkToBuy,
-    topPick: topPick,
-    seoKeyword: seoKeyword
-  }
+  //updates review without uploading new image
+  if (!req.file) {
+    console.log("no file/file buffer exists");
+    const reviewData = JSON.parse(req.body.data);
+    console.log(reviewData);
 
-  try {
-    await Review.updateOne({"_id": id}, updatedReview)
+    const { id } = reviewData;
+    const { newReview } = reviewData;
+    console.log(newReview);
 
-    const reviews = await Review.find().populate('author').populate('genre').populate('publisher')
-  res.send({reviews})
+    const {
+      title,
+      author,
+      review,
+      publisher,
+      yearPublished,
+      genre,
+      isbn,
+      linkToBuy,
+      topPick,
+      seoKeyword,
+      url
+    } = newReview;
 
-  } catch (err) {
-    return res.status(400).json(`in post catch err with error: ${err}`);
-  }
+    const foundAuthor = await findAuthor(author);
+    const foundPublisher = await findPublisher(publisher);
+    const foundGenre = await findGenre(genre);
+    const handleGenrePromises = await Promise.all(foundGenre);
 
-};
-
-const deleteReview = async (req, res) => {
-  const { title } = req.body
-  try {
-    const doc = await Review.findOneAndDelete({ title: title });
-
-    if (!doc) {
-      res.status(404).send(`No Review ${title} found`);
-    }
-    
-    res.send(`${doc.title} deleted from database`);
-  } catch (err) {
-    return res.status(400).json(err);
-  }
-};
-
-//Create Review
-const createReview = async (req, res) => {
-  const data = req.body
-  
-  const {
-    title,
-    author,
-    review,
-    publisher,
-    yearPublished,
-    genre,
-    isbn,
-    linkToBuy,
-    topPick,
-    seoKeyword
-  } = req.body;
-
-  const foundAuthor = await findAuthor(author);
-  const foundPublisher = await findPublisher(publisher);
-  const foundGenre = await findGenre(genre);
-  const handleGenrePromises = await Promise.all(foundGenre);
-
-  try {
-    const newReview = new Review({
+    const updatedReview = {
       title: title,
       author: foundAuthor,
       review: review,
@@ -172,11 +130,166 @@ const createReview = async (req, res) => {
       isbn: isbn,
       linkToBuy: linkToBuy,
       topPick: topPick,
-      seoKeyword: seoKeyword
+      seoKeyword: seoKeyword,
+      url: url
+    };
+
+    await Review.updateOne({ _id: id }, updatedReview);
+    const reviews = await Review.find()
+      .populate("author")
+      .populate("genre")
+      .populate("publisher");
+    res.send({ reviews });
+  } else {
+    console.log("file buffer/image exists");
+
+    //updates review with new image
+    let fileParams = {
+      Bucket: "bookmarks-rag",
+      Body: req.file.buffer,
+      Key: "bookmarks-" + req.file.originalname,
+      ACL: "public-read",
+      ContentType: req.file.mimetype
+    };
+
+    try {
+      s3credentials.upload(fileParams, async (err, datam) => {
+        if (err) {
+          res.send("you got an error");
+        } else {
+          const imageUrl = datam.Location;
+          const reviewData = JSON.parse(req.body.data);
+          const { id } = reviewData;
+          const { newReview } = reviewData;
+
+          const {
+            title,
+            author,
+            review,
+            publisher,
+            yearPublished,
+            genre,
+            isbn,
+            linkToBuy,
+            topPick,
+            seoKeyword,
+            url
+          } = newReview;
+
+          const foundAuthor = await findAuthor(author);
+          const foundPublisher = await findPublisher(publisher);
+          const foundGenre = await findGenre(genre);
+          const handleGenrePromises = await Promise.all(foundGenre);
+
+          const updatedReview = {
+            title: title,
+            author: foundAuthor,
+            review: review,
+            publisher: foundPublisher,
+            yearPublished: yearPublished,
+            genre: handleGenrePromises,
+            isbn: isbn,
+            linkToBuy: linkToBuy,
+            topPick: topPick,
+            seoKeyword: seoKeyword,
+            url: imageUrl
+          };
+
+          await Review.updateOne({ _id: id }, updatedReview);
+          const reviews = await Review.find()
+            .populate("author")
+            .populate("genre")
+            .populate("publisher");
+          res.send({ reviews });
+        }
+      });
+    } catch (err) {
+      return res.status(400).json(`in post catch err with error: ${err}`);
+    }
+  }
+};
+
+const deleteReview = async (req, res) => {
+  const { title } = req.body;
+  try {
+    const doc = await Review.findOneAndDelete({ title: title });
+
+    if (!doc) {
+      res.status(404).send(`No Review ${title} found`);
+    }
+
+    res.send(`${doc.title} deleted from database`);
+  } catch (err) {
+    return res.status(400).json(err);
+  }
+};
+
+//Create Review
+const createReview = async (req, res) => {
+  console.log("in create Review");
+
+  let fileParams = {
+    Bucket: "bookmarks-rag",
+    Body: req.file.buffer,
+    Key: "bookmarks-" + req.file.originalname,
+    ACL: "public-read",
+    ContentType: req.file.mimetype
+  };
+
+  try {
+    s3credentials.upload(fileParams, async (err, datam) => {
+      if (err) {
+        // handle the error
+        // res.send('you got an error')
+      } else {
+        // here you have access to the AWS url through data.Location
+        // you could store this string in your database
+        console.log(datam.Location);
+        const imageUrl = datam.Location;
+        // res.send('all good')
+        console.log(imageUrl);
+
+        const reviewData = JSON.parse(req.body.data);
+        console.log(reviewData);
+
+        const {
+          title,
+          author,
+          review,
+          publisher,
+          yearPublished,
+          genre,
+          isbn,
+          linkToBuy,
+          topPick,
+          seoKeyword
+        } = reviewData;
+
+        const foundAuthor = await findAuthor(author);
+        const foundPublisher = await findPublisher(publisher);
+        const foundGenre = await findGenre(genre);
+        const handleGenrePromises = await Promise.all(foundGenre);
+
+        const newReview = await new Review({
+          title: title,
+          author: foundAuthor,
+          review: review,
+          publisher: foundPublisher,
+          yearPublished: yearPublished,
+          genre: handleGenrePromises,
+          isbn: isbn,
+          linkToBuy: linkToBuy,
+          topPick: topPick,
+          seoKeyword: seoKeyword,
+          url: imageUrl
+        });
+        console.log(newReview);
+
+        const savedReview = await newReview.save();
+        console.log(savedReview);
+        res.send(savedReview);
+      }
     });
-    console.log(newReview);
-    const savedReview = await newReview.save();
-    res.send({ savedReview: savedReview });
   } catch (err) {
     return res.status(400).json(`in post catch err with error: ${err}`);
   }
@@ -193,8 +306,6 @@ const seedData = async (req, res) => {
     res.send(`there's been an error: ${err}`);
   }
 };
-
-
 
 const findAuthor = async author => {
   const findAuthor = await Author.findOne({ name: author });
@@ -233,8 +344,6 @@ const findGenre = async genre => {
   });
   return await genreArray;
 };
-
-
 
 module.exports = {
   showReviewByTitle,
