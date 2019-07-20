@@ -54,7 +54,7 @@ const showAllReviews = async (req, res) => {
   // // res.send(findReviewsByGenre);
 
   try {
-    const reviews = await Review.find()
+    const reviews = await Review.find().sort( [['_id', -1]] )
       .populate("author")
       .populate("genre")
       .populate("publisher");
@@ -135,7 +135,7 @@ const updateReview = async (req, res) => {
     };
 
     await Review.updateOne({ _id: id }, updatedReview);
-    const reviews = await Review.find()
+    const reviews = await Review.find().sort( [['_id', -1]] )
       .populate("author")
       .populate("genre")
       .populate("publisher");
@@ -196,7 +196,7 @@ const updateReview = async (req, res) => {
           };
 
           await Review.updateOne({ _id: id }, updatedReview);
-          const reviews = await Review.find()
+          const reviews = await Review.find().sort( [['_id', -1]] )
             .populate("author")
             .populate("genre")
             .populate("publisher");
@@ -286,8 +286,13 @@ const createReview = async (req, res) => {
         console.log(newReview);
 
         const savedReview = await newReview.save();
-        console.log(savedReview);
-        res.send(savedReview);
+        // console.log(savedReview);
+        // res.send(savedReview);
+        const reviews = await Review.find().sort( [['_id', -1]] )
+            .populate("author")
+            .populate("genre")
+            .populate("publisher");
+          res.send({ reviews });
       }
     });
   } catch (err) {
