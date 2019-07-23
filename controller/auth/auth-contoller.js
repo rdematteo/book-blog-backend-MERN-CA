@@ -96,11 +96,12 @@ const forgot = async (req, res) => {
 }
 
 const sendForgotPasswordEmail = (token,memEmail) => {
+  const urlReact = process.env.REACT_APP_API_URL
   const data = {
     text: 'Plaintext version of the message',
     html:   `<div><h3>Hi,</h3>\
             <p>You requested for a password reset, kindly use this \
-            <a href="http://localhost:3000/ResetPassword?token=${token}&email=${memEmail}">link</a> to reset your password</p>
+            <a href="${urlReact}/auth/ResetPassword?token=${token}&email=${memEmail}">link</a> to reset your password</p>
             <br>
             <p>Cheers!</p>
             </div>`,
