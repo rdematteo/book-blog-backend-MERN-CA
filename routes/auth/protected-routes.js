@@ -34,6 +34,8 @@ router.post('/createReview', upload, controllerMethods.createReview)
 
 router.delete('/deleteReview', controllerMethods.deleteReview)
 
+router.put('/updateReview', upload, controllerMethods.updateReview)
+
 
 
 
