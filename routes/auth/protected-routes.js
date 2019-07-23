@@ -13,7 +13,8 @@ const upload = multer({ storage: storage }).single('file');
 
 const isAuthenticated = async (req, res, next) => {
   
-  // console.log(req.headers.token);
+  console.log(req.headers);
+  console.log(req.body);
   
   try {
     const token = req.headers.token
