@@ -14,8 +14,10 @@ router.get('/reviews', controllerMethods.showAllReviews)
 router.put('/updateReview', upload, controllerMethods.updateReview)
 
 router.delete('/deleteReview', controllerMethods.deleteReview)
+//moved to protected routes
 
 router.post('/createReview', upload, controllerMethods.createReview)
+//createReview put into protected routes
 
 router.post('/testseed', controllerMethods.seedData)
 

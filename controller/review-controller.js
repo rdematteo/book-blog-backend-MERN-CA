@@ -210,14 +210,14 @@ const updateReview = async (req, res) => {
 };
 
 const deleteReview = async (req, res) => {
-  const { title } = req.body;
+  console.log("in deleteReview");
+  console.log(req.body);
+  const { title } = req.body.data;
   try {
     const doc = await Review.findOneAndDelete({ title: title });
-
     if (!doc) {
       res.status(404).send(`No Review ${title} found`);
     }
-
     res.send(`${doc.title} deleted from database`);
   } catch (err) {
     return res.status(400).json(err);
