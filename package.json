@@ -25,9 +25,7 @@
     "aws-sdk": "^2.494.0",
     "bcrypt": "^3.0.6",
     "cors": "^2.8.5",
-    "dotenv": "^8.0.0",
     "express": "^4.17.1",
-    "joi": "^14.3.1",
     "jsonwebtoken": "^8.5.1",
     "mongoose": "^5.6.4",
     "multer": "^1.4.2",
@@ -38,6 +36,10 @@
   "devDependencies": {
     "jest": "^24.8.0",
     "now": "^15.7.0",
-    "supertest": "^4.0.2"
+    "supertest": "^4.0.2",
+    "dotenv": "^8.0.0"
+  },
+  "engines": {
+    "node": "^8 || ^10"
   }
 }

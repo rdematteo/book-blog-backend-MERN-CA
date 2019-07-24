@@ -1,4 +1,4 @@
-const port = process.env.Port || 5500;
+const PORT = process.env.PORT || 5500;
 const mongoose = require("mongoose");
 const app = require('./server')
 
@@ -8,6 +8,6 @@ mongoose.connect(process.env.DB_URL, { useNewUrlParser: true }, err => {
   console.log("connected to mongodb ✅");
 });
 
-app.listen(port, () => {
-  console.log(`listening at http://localhost:${port}`);
+app.listen(PORT, () => {
+  console.log(`listening at http://localhost:${PORT}`);
 });
