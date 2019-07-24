@@ -35,12 +35,12 @@ const emailSubscription = (req, res) => {
 
   request(options, (err, response, body) => {
     if (err) {
-      res.redirect("/fail.html");
+      res.status(406).send("unable to subscribe");
     } else {
       if (response.statusCode === 200) {
-        res.redirect("/success.html");
+        res.status(200).send("successfully subscribed");
       } else {
-        res.redirect("/fail.html");
+        res.status(406).send("unable to subscribe");
       }
     }
   });
