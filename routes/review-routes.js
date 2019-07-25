@@ -7,8 +7,8 @@ const multer = require('multer');
 const storage = multer.memoryStorage()
 const upload = multer({ storage: storage }).single('file');
 
-router.get('/review/title/:name', controllerMethods.showReviewByTitle)
 
+//a route needed here and one moved to protecetd routes
 router.get('/reviews', controllerMethods.showAllReviews)
 
 router.post('/testseed', controllerMethods.seedData)

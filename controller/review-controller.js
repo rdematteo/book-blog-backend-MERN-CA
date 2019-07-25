@@ -64,28 +64,6 @@ const showAllReviews = async (req, res) => {
   }
 };
 
-//Show review by title
-const showReviewByTitle = async (req, res) => {
-  const { name } = req.params;
-  try {
-    const myString = name;
-    const findReview = await Review.find({ title: name });
-    res.send(findReview);
-  } catch (err) {
-    res.json(err);
-  }
-};
-
-// show one review
-const showOneReview = async (req, res) => {
-  const { name } = req.params;
-  try {
-    const findReview = await Review.find({ title: name });
-    res.send(findReview);
-  } catch (err) {
-    res.json(err);
-  }
-};
 
 // Update review
 const updateReview = async (req, res) => {
@@ -226,7 +204,6 @@ const deleteReview = async (req, res) => {
 
 //Create Review
 const createReview = async (req, res) => {
-  console.log("in create Review");
 
   let fileParams = {
     Bucket: "bookmarks-rag",
@@ -351,8 +328,6 @@ const findGenre = async genre => {
 };
 
 module.exports = {
-  showReviewByTitle,
-  showOneReview,
   updateReview,
   deleteReview,
   createReview,
