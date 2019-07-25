@@ -27,20 +27,20 @@ beforeAll(async () => {
     const resp = await request(app).get('/reviews');
     expect(resp.body.reviews.length).toBe;
   })
-// test("testing register user", async () => {
-//   const body = {email: "myemail@gamil.com", password: "1234"}
-//   const resp = await request(app).post('/auth/register').send(body);
+test("testing register user", async () => {
+  const body = {email: "myemail@gamil.com", password: "1234"}
+  const resp = await request(app).post('/auth/register').send(body);
 
-//   expect(resp.status).toBe(200);
-//   expect(resp.body.token).not.toBe(null);
-// })
+  expect(resp.status).toBe(200);
+  expect(resp.body.token).not.toBe(null);
+})
 
-// test("testing register user with user who exist already", async () => {
-//   const body = {email: "myemail@gamil.com", password: "1234"}
-//   const resp = await request(app).post('/auth/register').send(body);
+test("testing register user with user who exist already", async () => {
+  const body = {email: "myemail@gamil.com", password: "1234"}
+  const resp = await request(app).post('/auth/register').send(body);
 
-//   expect(resp.status).toBe(403);
-// })
+  expect(resp.status).toBe(403);
+})
 
 
 afterAll(async () => {

@@ -3,8 +3,6 @@ const router = express.Router();
 const controllerMethods = require("../../controller/review-controller");
 const jwt = require("jsonwebtoken");
 const multer = require("multer");
-
-// multer handles image buffer object, adds req.file to endpoint
 const storage = multer.memoryStorage();
 const upload = multer({ storage: storage }).single("file");
 

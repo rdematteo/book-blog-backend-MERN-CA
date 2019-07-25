@@ -39,7 +39,6 @@ const register = async (req, res) => {
 
 // login post endpoint
 const login = async (req, res) => {
-  //res.send(req.body)
   const { email, password } = req.body
   console.log(email+"     "+password)
   if (email && password) {
@@ -90,7 +89,6 @@ const reset = async (req, res) => {
 
 const forgot = async (req, res) => {
   const token = await generateNewAccessToken(req.body.email)
-  //We will send the email from here
   sendForgotPasswordEmail(token, req.body.email);
   res.json( {token: token})
 }
@@ -121,17 +119,14 @@ const sendForgotPasswordEmail = (token,memEmail) => {
 }
 const forgotPass = async (req, res) => {
   const { email, newPassword } = req.body
-  console.log(newPassword);
   try {
     const query = await Admin.findOne({ email: email})
-    console.log(query);
       if(query !== null){
         const newHash = await generateNewHash(newPassword);
 
         query.password = newHash
         await query.save()
         const token = await generateAccessToken(query)
-        console.log(token);
         return res.send({ token })
       } else {
         return res.status(403).send('email not found')
@@ -144,7 +139,6 @@ const forgotPass = async (req, res) => {
 }
 const resetpass = async (req,res) => {
   const {token,email} = req.params;
-  console.log(__dirname);
   res.sendFile(path.join(__dirname, `../../public/testRest.html`));
 }
 

@@ -14,7 +14,7 @@ const s3credentials = new AWS.S3({
 const showAllReviews = async (req, res) => {
   // console.log("in show all reviews");
 
-  /*the below code allows developors to hit backend if wanting to search for author/isbn/publisher/genre
+  /*the below code allows developers to hit backend if wanting to search for author/isbn/publisher/genre
   the application search the data from state*/
 
   // //search by author
