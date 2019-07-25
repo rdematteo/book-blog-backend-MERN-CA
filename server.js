@@ -13,7 +13,6 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 // Static folder
-//app.use(express.static(path.join(__dirname, "/public")));
 app.use("/", emailSubscriptionRoutes);
 
 // Connection of express routes with root directory
